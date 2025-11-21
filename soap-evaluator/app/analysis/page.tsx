@@ -84,6 +84,10 @@ export default function AnalysisPage() {
     router.push('/results');
   };
 
+  const handleGoHome = () => {
+    router.push('/');
+  };
+
   const handleDownloadResults = () => {
     if (!result || !metric) return;
 
@@ -128,6 +132,13 @@ export default function AnalysisPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleGoHome}
+              className="rounded-2xl border border-white/10 bg-black/40 px-4 py-2 text-xs font-semibold text-zinc-100 shadow-md shadow-black/40 transition hover:bg-black/60"
+            >
+              Home
+            </button>
             <button
               type="button"
               onClick={handleBackToResults}

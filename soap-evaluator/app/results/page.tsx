@@ -251,17 +251,32 @@ export default function ResultsPage() {
     setHasReference(true);
   };
 
+  const handleGoHome = () => {
+    router.push('/');
+  };
+
   return (
     <main className="relative min-h-screen bg-gradient-to-br from-zinc-950 via-slate-900 to-emerald-900 py-16 text-zinc-50">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.25),_transparent_50%)]" />
       <div className="mx-auto w-full max-w-[90rem] space-y-8 px-6">
-        <div className="space-y-2 lg:ml-auto lg:max-w-5xl">
-          <h1 className="text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
-            SOAP Note Preview
-          </h1>
-          <p className="text-sm text-zinc-400">
-            Left: Uploaded transcript. Right: Generated SOAP note. Both panels are scrollable.
-          </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2 lg:max-w-5xl">
+            <h1 className="text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
+              SOAP Note Preview
+            </h1>
+            <p className="text-sm text-zinc-400">
+              Left: Uploaded transcript. Right: Generated SOAP note. Both panels are scrollable.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleGoHome}
+              className="rounded-2xl border border-white/10 bg-black/40 px-4 py-2 text-xs font-semibold text-zinc-100 shadow-md shadow-black/40 transition hover:bg-black/60"
+            >
+              Home
+            </button>
+          </div>
         </div>
 
         {errorGenerate && (
@@ -317,31 +332,6 @@ export default function ResultsPage() {
                 )}
               </div>
             </div>
-
-            {metrics.length > 0 && (
-              <div className="space-y-2 rounded-2xl border border-white/10 bg-black/30 p-3 text-xs text-zinc-100">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-300">
-                  Evaluation metrics
-                </p>
-                {(() => {
-                  const m = metrics[0];
-                  if (!m) return null;
-                  return (
-                    <div className="flex flex-wrap gap-2 text-[11px] text-zinc-200">
-                      <span className="rounded-full bg-emerald-900/60 px-2 py-0.5">
-                        ROUGE-1: {(m.rouge1 * 100).toFixed(1)}%
-                      </span>
-                      <span className="rounded-full bg-sky-900/60 px-2 py-0.5">
-                        BLEU-1: {(m.bleu1 * 100).toFixed(1)}%
-                      </span>
-                      <span className="rounded-full bg-purple-900/60 px-2 py-0.5">
-                        Score: {(m.combined * 100).toFixed(1)}%
-                      </span>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
           </section>
         </div>
 
