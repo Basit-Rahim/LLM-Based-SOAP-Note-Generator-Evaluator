@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type ModelResult = {
   id: string;
@@ -20,6 +21,7 @@ type MetricResult = {
 };
 
 export default function ResultsPage() {
+  const router = useRouter();
   const [transcript, setTranscript] = useState<string>('');
   const [reference, setReference] = useState<string>('');
   const [hasReference, setHasReference] = useState<boolean>(false);
@@ -214,6 +216,11 @@ export default function ResultsPage() {
         }
       } catch (err) {
         console.error('Failed to store SOAP metrics', err);
+      }
+
+      // Navigate to analysis page once evaluation is complete
+      if (metrics.length > 0) {
+        router.push('/analysis');
       }
     } catch (err: any) {
       console.error('Error evaluating SOAP notes', err);
