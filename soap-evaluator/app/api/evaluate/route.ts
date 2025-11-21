@@ -79,12 +79,20 @@ export async function POST(request: NextRequest) {
         const r1 = rouge1(reference, candidate.text);
         const b1 = bleu1(reference, candidate.text);
         const combined = (r1 + b1) / 2;
+
+        const referenceTokens = tokenize(reference).length;
+        const candidateTokens = tokenize(candidate.text).length;
+
         return {
           id: candidate.id,
           label: candidate.label,
           rouge1: r1,
           bleu1: b1,
           combined,
+          tokenInfo: {
+            referenceTokens,
+            candidateTokens,
+          },
         };
       });
 

@@ -6,12 +6,26 @@ type GeneratePayload = {
   model?: string; // openai or gemini model name
 };
 
-const buildPrompt = (transcript: string, reference?: string | null) =>
-  [
-    `Transcript:\n${transcript}`,
-    reference ? `\nReference:\n${reference}` : '',
-    '\nPlease respond with a concise SOAP note (Subjective, Objective, Assessment, Plan).',
-  ].join('');
+const buildPrompt = (transcript: string) => `
+You are a clinical documentation specialist. Generate a complete and medically accurate SOAP note based on the transcript below.
+
+### Instructions:
+- Produce a structured, concise, and clinically coherent SOAP note.
+- Follow the exact SOAP format:
+  **S – Subjective**: Patient-reported symptoms, history, and concerns.
+  **O – Objective**: Exam findings, vitals, tests, observable/measurable details.
+  **A – Assessment**: Diagnoses, differential diagnoses, and clinical reasoning.
+  **P – Plan**: Treatment, medications, labs/imaging, follow-up instructions.
+- Do NOT hallucinate. Use only information present in the transcript.
+- If a reference note is provided, treat it ONLY as stylistic guidance.
+- Maintain a professional, medical tone.
+- Keep paragraphs short and clear.
+
+### Transcript:
+${transcript}
+
+Now produce the final SOAP note.
+`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,7 +52,7 @@ export async function POST(request: NextRequest) {
         ? 'gemini'
         : 'openai';
 
-    const prompt = buildPrompt(transcript, reference);
+    const prompt = buildPrompt(transcript);
 
     // ------------------------------------------------------
     // ✅ GEMINI (FULL FIX — clean model path)

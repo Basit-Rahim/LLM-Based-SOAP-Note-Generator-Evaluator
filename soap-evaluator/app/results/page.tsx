@@ -18,6 +18,10 @@ type MetricResult = {
   rouge1: number;
   bleu1: number;
   combined: number;
+  tokenInfo?: {
+    referenceTokens: number;
+    candidateTokens: number;
+  };
 };
 
 export default function ResultsPage() {
@@ -255,6 +259,27 @@ export default function ResultsPage() {
     router.push('/');
   };
 
+  const renderWithBold = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+    return parts.map((part, index) => {
+      const match = part.match(/^\*\*([\s\S]*)\*\*$/);
+      if (match) {
+        return (
+          <strong
+            key={index}
+            className="font-semibold text-emerald-100 bg-emerald-900/30 px-1 rounded"
+          >
+            {match[1]}
+          </strong>
+        );
+      }
+      return <span key={index} className="text-zinc-100">
+        {part}
+      </span>;
+    });
+  };
+
   return (
     <main className="relative min-h-screen bg-gradient-to-br from-zinc-950 via-slate-900 to-emerald-900 py-16 text-zinc-50">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.25),_transparent_50%)]" />
@@ -290,9 +315,9 @@ export default function ResultsPage() {
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.25rem] text-emerald-300">
               Transcript
             </h2>
-            <div className="min-h-[20rem] max-h-[40rem] flex-1 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-zinc-100">
+            <div className="min-h-[16rem] max-h-[70vh] flex-1 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-zinc-100">
               {transcript ? (
-                <pre className="whitespace-pre-wrap break-words font-mono text-xs sm:text-sm">
+                <pre className="whitespace-pre-wrap break-words font-mono text-sm sm:text-base">
                   {transcript}
                 </pre>
               ) : (
@@ -306,7 +331,7 @@ export default function ResultsPage() {
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.25rem] text-sky-300">
                 SOAP Note
               </h2>
-              <div className="min-h-[20rem] max-h-[40rem] flex-1 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-zinc-100">
+              <div className="min-h-[16rem] max-h-[70vh] flex-1 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-zinc-100">
                 {modelResults.length > 0 ? (
                   (() => {
                     const primary = modelResults.find((m) => !m.error && m.note) || modelResults[0];
@@ -318,8 +343,8 @@ export default function ResultsPage() {
                       );
                     }
                     return (
-                      <pre className="whitespace-pre-wrap break-words font-mono text-xs sm:text-sm">
-                        {primary.note}
+                      <pre className="whitespace-pre-wrap break-words font-mono text-sm sm:text-base">
+                        {renderWithBold(primary.note)}
                       </pre>
                     );
                   })()

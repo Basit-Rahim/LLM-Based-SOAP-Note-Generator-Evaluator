@@ -27,6 +27,10 @@ type MetricResult = {
   rouge1: number;
   bleu1: number;
   combined: number;
+  tokenInfo?: {
+    referenceTokens: number;
+    candidateTokens: number;
+  };
 };
 
 export default function AnalysisPage() {
@@ -88,6 +92,27 @@ export default function AnalysisPage() {
     router.push('/');
   };
 
+  const renderWithBold = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+    return parts.map((part, index) => {
+      const match = part.match(/^\*\*([\s\S]*)\*\*$/);
+      if (match) {
+        return (
+          <strong
+            key={index}
+            className="font-semibold text-emerald-100 bg-emerald-900/30 px-1 rounded"
+          >
+            {match[1]}
+          </strong>
+        );
+      }
+      return <span key={index} className="text-zinc-100">
+        {part}
+      </span>;
+    });
+  };
+
   const handleDownloadResults = () => {
     if (!result || !metric) return;
 
@@ -102,6 +127,7 @@ export default function AnalysisPage() {
         rouge1: metric.rouge1,
         bleu1: metric.bleu1,
         combined: metric.combined,
+        tokenInfo: metric.tokenInfo ?? null,
       },
     };
 
@@ -235,37 +261,61 @@ export default function AnalysisPage() {
               </p>
 
               <div className="rounded-2xl border border-white/10 bg-black/40 p-3 text-xs text-zinc-200">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-400">
-                  Model
-                </p>
-                <p className="mt-1 text-sm font-semibold text-zinc-50">{result?.model}</p>
-                {result?.provider && (
-                  <p className="mt-0.5 text-[11px] text-zinc-400">
-                    Provider: {result.provider === 'gemini' ? 'Gemini' : 'OpenAI'}
-                  </p>
-                )}
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-400">
+                      Model
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-zinc-50">{result?.model}</p>
+                    {result?.provider && (
+                      <p className="mt-0.5 text-[11px] text-zinc-400">
+                        Provider: {result.provider === 'gemini' ? 'Gemini' : 'OpenAI'}
+                      </p>
+                    )}
+                  </div>
+
+                  {metric?.tokenInfo && (
+                    <div className="mt-2 flex flex-col items-start gap-0.5 text-xs sm:text-[13px] text-zinc-300 sm:mt-0 sm:items-end">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-400">
+                        Tokens
+                      </p>
+                      <p>
+                        Input: <span className="font-medium text-zinc-100">{metric.tokenInfo.referenceTokens}</span>
+                      </p>
+                      <p>
+                        Output: <span className="font-medium text-zinc-100">{metric.tokenInfo.candidateTokens}</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid gap-3 text-xs text-zinc-200 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+                <div className="rounded-2xl border border-white/10 bg-black/40 p-3 max-h-[60vh] overflow-y-auto">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-400">
-                    Transcript
+                    Generated SOAP
                   </p>
-                  <p className="mt-1 line-clamp-5 text-[11px] text-zinc-300">{transcript}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-zinc-300 whitespace-pre-wrap break-words">
+                    {result?.note && renderWithBold(result.note)}
+                  </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+                <div className="rounded-2xl border border-white/10 bg-black/40 p-3 max-h-[60vh] overflow-y-auto">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-400">
                     Reference SOAP
                   </p>
-                  <p className="mt-1 line-clamp-5 text-[11px] text-zinc-300">{reference}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-zinc-300 whitespace-pre-wrap break-words">
+                    {reference}
+                  </p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-black/40 p-3 text-xs text-zinc-200">
+              <div className="mt-3 rounded-2xl border border-white/10 bg-black/40 p-3 text-xs text-zinc-200 max-h-[60vh] overflow-y-auto">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16rem] text-zinc-400">
-                  Generated SOAP
+                  Transcript
                 </p>
-                <p className="mt-1 line-clamp-7 text-[11px] text-zinc-300">{result?.note}</p>
+                <p className="mt-1 text-xs sm:text-sm text-zinc-300 whitespace-pre-wrap break-words">
+                  {transcript}
+                </p>
               </div>
             </section>
           </div>
