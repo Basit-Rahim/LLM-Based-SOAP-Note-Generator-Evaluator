@@ -289,9 +289,6 @@ export default function ResultsPage() {
             <h1 className="text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
               SOAP Note Preview
             </h1>
-            <p className="text-sm text-zinc-400">
-              Left: Uploaded transcript. Right: Generated SOAP note. Both panels are scrollable.
-            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <button
